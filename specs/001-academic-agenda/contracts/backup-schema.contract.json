@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AgendaIFESBackupPackage",
+  "description": "Esquema formal do pacote de backup e restauração do AgendaIFES",
+  "type": "object",
+  "required": ["versaoSchema", "origem", "geradoEm", "dados"],
+  "properties": {
+    "versaoSchema": {
+      "type": "integer",
+      "const": 1,
+      "description": "Versão do esquema de backup"
+    },
+    "origem": {
+      "type": "string",
+      "const": "AgendaIFES",
+      "description": "Identificador do aplicativo gerador"
+    },
+    "geradoEm": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Carimbo de data e hora ISO 8601 da exportação"
+    },
+    "dados": {
+      "type": "object",
+      "required": ["disciplinas", "tarefas"],
+      "properties": {
+        "disciplinas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Disciplina"
+          }
+        },
+        "tarefas": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Tarefa"
+          }
+        },
+        "configuracoes": {
+          "$ref": "#/$defs/Configuracoes"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "Disciplina": {
+      "type": "object",
+      "required": ["id", "nome", "cor", "criadoEm", "atualizadoEm"],
+      "properties": {
+        "id": { "type": "string" },
+        "nome": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "professor": { "type": "string", "maxLength": 100 },
+        "sala": { "type": "string", "maxLength": 50 },
+        "cor": { "type": "string", "pattern": "^#([0-9A-Fa-f]{6})$" },
+        "criadoEm": { "type": "string", "format": "date-time" },
+        "atualizadoEm": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "Tarefa": {
+      "type": "object",
+      "required": ["id", "titulo", "dataEntrega", "prioridade", "status", "criadoEm", "atualizadoEm"],
+      "properties": {
+        "id": { "type": "string" },
+        "titulo": { "type": "string", "minLength": 3, "maxLength": 150 },
+        "descricao": { "type": "string", "maxLength": 1000 },
+        "dataEntrega": { "type": "string" },
+        "prioridade": { "type": "string", "enum": ["BAIXA", "MEDIA", "ALTA"] },
+        "status": { "type": "string", "enum": ["PENDENTE", "CONCLUIDA"] },
+        "disciplinaId": { "type": ["string", "null"] },
+        "criadoEm": { "type": "string", "format": "date-time" },
+        "atualizadoEm": { "type": "string", "format": "date-time" },
+        "concluidaEm": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "Configuracoes": {
+      "type": "object",
+      "properties": {
+        "tema": { "type": "string", "enum": ["claro", "escuro", "sistema"] },
+        "ordenacaoPadrao": { "type": "string", "enum": ["prazo", "prioridade", "titulo"] },
+        "filtroStatusPadrao": { "type": "string", "enum": ["todos", "pendentes", "concluidas"] }
+      },
+      "additionalProperties": false
+    }
+  }
+}
